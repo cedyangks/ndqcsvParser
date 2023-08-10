@@ -1,0 +1,54 @@
+void ParseCSV(std::string& refArg){
+    std::string::iterator iterobjs = refArg.begin();
+    std::vector<uint32_t> NewlinePos{};
+    std::vector<std::tuple<uint32_t,std::size_t,uint16_t,uint16_t>> CommaPos{};
+    std::vector<std::tuple<uint16_t,uint16_t>> DataPos{};
+    uint16_t Newline {0};
+    int32_t CommaCount {0};
+    uint32_t WordCounter {0};
+    uint32_t singleLinePos = 0;
+    while (iterobjs.operator*() != '\0'){
+        switch ((int)refArg.operator[](WordCounter)){
+            case 10:{NewlinePos.push_back(WordCounter);singleLinePos=0;CommaCount=0;Newline++;break;}
+            case 44:{CommaCount++;CommaPos.push_back({WordCounter,singleLinePos,Newline,CommaCount});DataPos.push_back({Newline,CommaCount});singleLinePos++;break;}
+            default:{singleLinePos++;break;}
+        }
+        WordCounter++;
+        iterobjs++;
+        continue;
+    }
+
+    std::cout << std::get<1>(DataPos.operator[](3)) << " Reading #number of comma " << std::get<1>(DataPos.operator[](5)) << std::endl;
+    std::cout << std::get<0>(DataPos.operator[](3)) << " Reading #number of comma " << std::get<0>(DataPos.operator[](5)) << " *** " << std::get<0>(DataPos.operator[](7)) << std::endl;
+    std::cout << Newline << " check result " << WordCounter << std::endl;
+    std::tuple<std::string,std::string> TupleArr[Newline]{}; // an array of empty tu0ples 
+    uint32_t x = 0;
+    int16_t t = 0; // different types so that the data can sit on different CACHE LINE
+    for (;t < Newline;){
+        if (refArg.operator[](std::get<0>(CommaPos.operator[](x+2))) == 44 && (std::get<3>(CommaPos.operator[](x+5)))==1){              // apply offset of TWO to ignore the 3 COLUMNS header row
+                uint32_t y = 2;
+                for (; refArg.operator[](std::get<0>(CommaPos.operator[](x+2))+y)!=34; y=y+1){
+                        std::get<0>(TupleArr[t]).operator+=(refArg.operator[](std::get<0>(CommaPos.operator[](x+2))+y)); // operator += to keep accumulating
+                }
+            std::cout << std::get<0>(TupleArr[t]) << " Printing String " << std::endl;
+            x = x + 3;
+            t++;
+            continue;
+        }
+
+        (refArg.operator[](std::get<0>(CommaPos.operator[](x+2))) == 44 && (std::get<3>(CommaPos.operator[](x+4)))==1)?({
+                uint32_t y = 2;
+                for (; refArg.operator[](std::get<0>(CommaPos.operator[](x+2))+y)!=34; y=y+1){
+                        std::get<0>(TupleArr[t]).operator+=(refArg.operator[](std::get<0>(CommaPos.operator[](x+2))+y)); // operator += to keep accumulating
+                }
+            std::cout << std::get<0>(TupleArr[t]) << " Printing Strings XXXX " << std::endl;
+            x = x + 2;
+            1;
+        }):0;
+        t++;
+        continue;
+
+    }
+
+    return;
+}

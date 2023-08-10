@@ -1,0 +1,5 @@
+nvcc -Xcompiler -fopenmp -O2 -std=c++17 -diag-suppress=1650 -I/home/cyang279/TensorRT-8.6.1.6/include -I/usr/local/cuda-12.1/include -I/home/cyang279/TensorRT-8.6.1.6/samples/common -I/home/cyang279/TensorsCapital UsingTensors.cu -c
+
+nvcc -L/usr/local/cuda-12.1/lib -L/home/cyang279/TensorRT-8.6.1.6/lib -L/home/cyang279/TensorCapital -L/usr/lib/llvm-10/lib -L/usr/lib/x86_64-gnu -ljsoncpp -lomp UsingTensors.o -o ExecuteOMPS
+
+time ./ExecuteOMPS RDNA3 RYZEN_9_7490HS
